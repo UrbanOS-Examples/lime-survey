@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Chart.Name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ .Chart.Name }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ .Chart.Name }}
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: {{ .Chart.Name }}
+    spec:
+      containers:
+      - name: web-server
+        image: {{ .Values.lime.image.repository}}:{{ .Values.lime.image.tag}}
+        imagePullPolicy: {{ .Values.lime.image.pullPolicy }}
+        ports:
+        - containerPort: 80
+          name: httpd
+        volumeMounts:
+        - name: init-lime
+          mountPath: /var/www/html/application/config/config.php
+          subPath: config.php
+      volumes:
+      - name: init-lime
+        configMap:
+          name: init-lime

@@ -1,0 +1,39 @@
+lime:
+  image:
+    repository: 199837183662.dkr.ecr.us-east-2.amazonaws.com/scos/lime-survey
+    tag: latest
+    pullPolicy: IfNotPresent
+  replicaCount: 1
+  service:
+    type: NodePort
+    port: 80
+  adminUser: scosmin
+  adminPassword: password123
+  adminDisplayName: SCOS Admin
+  adminEmail: admin@smartcolumbusos.com
+
+db:
+  enabled: false
+  type: postgres
+  image:
+    repository: postgres
+    tag: 11.1-alpine
+    pullPolicy: IfNotPresent
+  port: 5432
+  replicaCount: 1
+  passwordVarName: POSTGRES_PASSWORD
+  password: password123
+  db_name: lime_survey
+
+ingress:
+  enabled: true
+  annotations:
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/tags: scos.delete.on.teardown=true
+    alb.ingress.kubernetes.io/scheme: internal
+    alb.ingress.kubernetes.io/actions.redirect: '{"Type": "redirect", "RedirectConfig":{"Protocol": "HTTPS", "Port": "443", "StatusCode": "HTTP_301"}}'
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+  dnsZone: lime.sandbox.internal.smartcolumbusos.com
+
+init:
+  enabled: false

@@ -1,0 +1,33 @@
+{{- if .Values.db.enabled -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Chart.Name }}-{{ .Values.db.type }}
+  labels:
+    app: {{ .Chart.Name }}-db
+spec:
+  selector:
+    matchLabels:
+      app: {{ .Chart.Name }}-db
+  replicas: {{ .Values.db.replicaCount }}
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: {{ .Chart.Name }}-db
+    spec:
+      containers:
+      - name: {{ .Values.db.type }}
+        image: {{ .Values.db.image.repository }}:{{ .Values.db.image.tag }}
+        imagePullPolicy: {{ .Values.db.image.pullPolicy }}
+        env:
+        - name: {{ .Values.db.passwordVarName }}
+          value: {{ .Values.db.password }}
+        ports:
+        - containerPort: {{ .Values.db.port }}
+          name: {{ .Values.db.type }}
+{{- end }}
