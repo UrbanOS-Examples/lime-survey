@@ -72,45 +72,5 @@ def deployLimeTo(params = [:]) {
         sh "terraform init && terraform workspace new ${environment}"
             terraform.plan(terraform.defaultVarFile)
             terraform.apply()
-            retry(20) {
-                sleep(time: 30, unit: 'SECONDS')
-                sh ("""#!/bin/bash
-                    set -ex
-                    ./smoketest.sh https://nifi.${environment}.internal.smartcolumbusos.com/nifi/
-                    ./smoketest.sh https://kylo.${environment}.internal.smartcolumbusos.com/login.html
-                """.trim())
-            }
-
-
-
-        def subnets = terraformOutputs.public_subnets.value.join(/\\,/)
-        def allowInboundTrafficSG = terraformOutputs.allow_all_security_group.value
-        def certificateARN = scos.terraformOutput(environment, internal ? 'operating-system' : 'prod').tls_certificate_arn.value
-        def dns_zone = environment + '.internal.smartcolumbusos.com'
-        def ingressScheme = internal ? 'internal' : 'internet-facing'
-/* THIS PROBLEM PROBABLY GOES AWAY WHEN THIS IS TERRA-FIED
-        def dbHost = terraformOutputs.lime_db_address.value
-        def dbUser = terraformOutputs.<THIS SHOULD BE SET AS AN OUTPUT FOR EASE OF RETRIEVAL>
-        def dbPassword = <HOW TO GET?>
-        def dbName = terraformOutputs.<THIS SHOULD BE SET AS AN OUTPUT FOR EASE OF RETRIEVAL>
-        def adminPassword = <HOW TO GET?>
-*/
-        sh("""#!/bin/bash
-            set -e
-            helm init --client-only
-            helm upgrade --install lime-survey ./lime-survey \
-                --namespace=lime-survey \
-                --set ingress.annotations."alb\\.ingress\\.kubernetes\\.io\\/scheme"="${ingressScheme}" \
-                --set ingress.annotations."alb\\.ingress\\.kubernetes\\.io\\/subnets"="${subnets}" \
-                --set ingress.annotations."alb\\.ingress\\.kubernetes\\.io\\/security\\-groups"="${allowInboundTrafficSG}" \
-                --set ingress.annotations."alb\\.ingress\\.kubernetes\\.io\\/certificate-arn"="${certificateARN}" \
-                --set ingress.hosts[0]="survey\\.${dns_zone}" \
-                --set db.host="${dbHost}" \
-                --set db.user="${dbUser}" \
-                --set db.password="${dbPassword}" \
-                --set db.db_name="${dbName}" \
-                --set lime.adminPassword="${adminPassword}" \
-                --set image.tag="${env.GIT_COMMIT_HASH}"
-        """.trim())
     }
 }
