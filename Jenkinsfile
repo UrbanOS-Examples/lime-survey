@@ -64,13 +64,7 @@ def deployLimeTo(params = [:]) {
     def environment = params.get('environment')
     if (environment == null) throw new IllegalArgumentException("environment must be specified")
 
-    def internal = params.get('internal', true)
-
-    scos.withEksCredentials(environment) {
-
-        def terraformOutputs = scos.terraformOutput(environment)
-        sh "terraform init && terraform workspace new ${environment}"
-            terraform.plan(terraform.defaultVarFile)
-            terraform.apply()
-    }
+    sh "terraform init && terraform workspace new ${environment}"
+    terraform.plan(terraform.defaultVarFile)
+    terraform.apply()
 }
