@@ -1,5 +1,5 @@
 library(
-    identifier: 'pipeline-lib@4.3.2',
+    identifier: 'pipeline-lib@4.3.6',
     retriever: modernSCM([$class: 'GitSCMSource',
                           remote: 'https://github.com/SmartColumbusOS/pipeline-lib',
                           credentialsId: 'jenkins-github-user'])
@@ -64,6 +64,7 @@ def deployLimeTo(params = [:]) {
     def environment = params.get('environment')
     if (environment == null) throw new IllegalArgumentException("environment must be specified")
 
+    def terraform = scos.terraform(environment)
     sh "terraform init && terraform workspace new ${environment}"
     terraform.plan(terraform.defaultVarFile)
     terraform.apply()
