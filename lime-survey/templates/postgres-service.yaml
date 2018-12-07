@@ -1,0 +1,16 @@
+{{- if .Values.db.enabled -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Chart.Name }}-{{ .Values.db.type }}
+  labels:
+    app: {{ .Values.db.type }}
+spec:
+  type: ClusterIP
+  ports:
+  - port: {{ .Values.db.port }}
+    targetPort: {{ .Values.db.type }}
+    name: {{ .Values.db.type }}
+  selector:
+    app: {{ .Chart.Name }}-db
+{{- end }}

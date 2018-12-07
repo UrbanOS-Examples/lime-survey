@@ -1,0 +1,28 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: {{ .Chart.Name }}
+  namespace: {{ .Release.Namespace }}
+  annotations:
+{{- if .Values.ingress.annotations }}
+{{ toYaml .Values.ingress.annotations | trim | indent 4 }}
+{{- end }}
+spec:
+  backend:
+    serviceName: {{ .Chart.Name }}
+    servicePort: {{ .Values.ingress.port  }}
+  rules:
+  - host: {{ .Values.ingress.prodDns }}
+    http:
+      paths:
+      - path: /*
+        backend:
+          serviceName: redirect
+          servicePort: use-annotation
+  - host: survey.{{ .Values.ingress.dnsZone }}
+    http:
+      paths:
+      - path: /*
+        backend:
+          serviceName: redirect
+          servicePort: use-annotation

@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Chart.Name }}
+  labels:
+    app: {{ .Chart.Name }}
+spec:
+  type: {{ .Values.lime.service.type }}
+  ports:
+  - port: {{ .Values.lime.service.port }}
+    targetPort: httpd
+    name: httpd
+  selector:
+    app: {{ .Chart.Name }}

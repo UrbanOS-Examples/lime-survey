@@ -1,0 +1,47 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: init-lime
+  labels:
+    app: {{ .Chart.Name }}
+data:
+  config.php: |-
+    <?php if (!defined('BASEPATH')) exit('No direct script access allowed');
+    return array(
+        'components' => array(
+            'db' => array(
+{{- if and .Values.db.enabled (eq .Values.db.type "postgres") }}
+                'connectionString' => 'pgsql:host={{ .Values.db.host }}-{{ .Values.db.type }};port={{ .Values.db.port }};user=postgres;password={{ .Values.db.password }};dbname={{ .Values.db.db_name }};',
+                'emulatePrepare' => true,
+                'username' => 'postgres',
+                'password' => '{{ .Values.db.password }}',
+                'charset' => 'utf8',
+{{- else if and (not .Values.db.enabled) (eq .Values.db.type "postgres") }}
+                'connectionString' => 'pgsql:host={{ .Values.db.host }};port={{ .Values.db.port }};user={{ .Values.db.user }};password={{ .Values.db.password }};dbname={{ .Values.db.db_name }};',
+                'emulatePrepare' => true,
+                'username' => '{{ .Values.db.user }}',
+                'password' => '{{ .Values.db.password }}',
+                'charset' => 'utf8',
+{{- else if and .Values.db.enabled (eq .Values.db.type "mysql") }}
+                'connectionString' => 'mysql:host={{ .Values.db.type }};port={{ .Values.db.port }};dbname={{ .Values.db.db_name }};',
+                'emulatePrepare' => true,
+                'username' => 'root',
+                'password' => '{{ .Values.db.password }}',
+                'charset' => 'utf8mb',
+{{- end }}
+                'tablePrefix' => 'lime_',
+            ),
+            'urlManager' => array(
+                'urlFormat' => 'path',
+                'rules' => array(
+                    // You can add your own rules here
+                ),
+                'showScriptName' => true,
+            ),
+        ),
+        'config'=>array(
+            'debug'=>0,
+            'debugsql'=>0, // Set this to 1 to enanble sql logging, only active when debug = 2
+            // Update default LimeSurvey config here
+        )
+    );
