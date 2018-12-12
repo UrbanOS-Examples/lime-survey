@@ -29,8 +29,6 @@ RUN mkdir -p /app/html \
  && curl -L "https://download.limesurvey.org/latest-stable-release/limesurvey${lime_version}.tar.gz" \
   | tar xzf - --strip-components=1 -C '/app/html'
 
-RUN chown -R daemon:daemon /var/www/html
-
 COPY limesurvey.conf /usr/local/apache2/conf/httpd.conf
 
 COPY run.sh /run.sh
