@@ -1,0 +1,13 @@
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: lime-pv
+  namespace: {{ .Release.Namespace }}
+spec:
+  storageClassName: standard-ssd
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/var/www
