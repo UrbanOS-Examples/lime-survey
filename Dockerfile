@@ -23,10 +23,13 @@ RUN apt-get update \
     /tmp/* \
     /var/tmp/*
 
-RUN mkdir -p /var/www/html \
- && curl -L "https://download.limesurvey.org/latest-stable-release/limesurvey${lime_version}.tar.gz" \
-  | tar xzf - --strip-components=1 -C '/var/www/html'
+RUN mkdir -p /var/www
 
-RUN chown -R daemon:daemon /var/www/html
+RUN mkdir -p /app/html \
+ && curl -L "https://download.limesurvey.org/latest-stable-release/limesurvey${lime_version}.tar.gz" \
+  | tar xzf - --strip-components=1 -C '/app/html'
 
 COPY limesurvey.conf /usr/local/apache2/conf/httpd.conf
+
+COPY run.sh /run.sh
+CMD ["/run.sh"]
