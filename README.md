@@ -27,3 +27,7 @@ This repository allows us to deploy lime-survey to kubernetes for capturing surv
   * Password: (Passwords for the web administrator accounts are stored in the secrets manager of the respective environments)
 * Navigate to the Theme Editor, make the changes you wish to see in the theme, and save the them before navigating away
 * Navigate to "Global Settings" and make sure that the correct theme is selected as the default theme. Save here, and check to make sure your changes have been implemented
+
+## Troubleshooting
+* NOTE: In production we currently are not automatically provisioning the prod.internal.smartcolumbusos.com domain, so if this is needed this will need to be created by hand.
+* On deployment to production, the TLS certificates may be improperly configured, this can be resolved by merely attaching the certificates for smartcolumbusos.com which were generated on 9/12
