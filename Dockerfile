@@ -1,6 +1,6 @@
 FROM httpd:2.4.37
 
-ARG lime_version=3.15.5+181115
+ARG lime_version=3.15.5-181115
 
 RUN apt-get update \
  && apt-get install -y \
@@ -26,7 +26,7 @@ RUN apt-get update \
 RUN mkdir -p /var/www
 
 RUN mkdir -p /app/html \
- && curl -L "https://download.limesurvey.org/latest-stable-release/limesurvey${lime_version}.tar.gz" \
+ && curl -L "https://s3.us-east-2.amazonaws.com/scos-third-party-repository/lime-survey/LimeSurvey-${lime_version}.tar.gz" \
   | tar xzf - --strip-components=1 -C '/app/html'
 
 COPY limesurvey.conf /usr/local/apache2/conf/httpd.conf
