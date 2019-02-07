@@ -12,7 +12,7 @@ spec:
     serviceName: {{ .Chart.Name }}
     servicePort: {{ .Values.ingress.port  }}
   rules:
-  - host: {{ .Values.ingress.prodDns }}
+  - host: survey.{{ .Values.ingress.rootDnsZone }}
     http:
       paths:
       - path: /*
