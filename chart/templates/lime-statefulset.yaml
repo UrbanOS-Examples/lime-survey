@@ -20,6 +20,19 @@ spec:
       labels:
         app: {{ .Chart.Name }}
     spec:
+      initContainers:
+      - name: init-web-files
+        image: {{ .Values.lime.image.repository}}:{{ .Values.lime.image.tag}}
+        imagePullPolicy: {{ .Values.lime.image.pullPolicy }}
+        command:
+        - bash
+        - "-c"
+        - |
+          cp -r /app/html /var/www
+          chown -R daemon:daemon /var/www/html
+        volumeMounts:
+        - name: lime-data
+          mountPath: /var/www
       containers:
       - name: web-server
         image: {{ .Values.lime.image.repository}}:{{ .Values.lime.image.tag}}

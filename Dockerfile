@@ -30,6 +30,3 @@ RUN mkdir -p /app/html \
   | tar xzf - --strip-components=1 -C '/app/html'
 
 COPY limesurvey.conf /usr/local/apache2/conf/httpd.conf
-
-COPY run.sh /run.sh
-CMD ["/run.sh"]
