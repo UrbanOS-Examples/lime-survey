@@ -7,10 +7,11 @@ lime:
   service:
     type: NodePort
     port: 80
-#  adminUser: scosmin
-#  adminPassword: password123
-#  adminDisplayName: SCOS Admin
-#  adminEmail: admin@smartcolumbusos.com
+  creds:
+    adminUser: scosmin
+    adminPassword: password123
+    adminDisplayName: SCOS Admin
+    adminEmail: admin@smartcolumbusos.com
 
 db:
   enabled: false
