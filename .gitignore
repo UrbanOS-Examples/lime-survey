@@ -10,3 +10,9 @@ erl_crash.dump
 .elixir_ls/
 .DS_Store
 outputs
+
+.terraform
+terraform.tfstate.d/
+*.plan
+*.out
+*.zip

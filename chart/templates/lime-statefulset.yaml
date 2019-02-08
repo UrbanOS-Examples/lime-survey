@@ -1,0 +1,81 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ .Chart.Name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ .Chart.Name }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ .Chart.Name }}
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: {{ .Chart.Name }}
+    spec:
+      initContainers:
+      - name: init-web-files
+        image: {{ .Values.lime.image.repository}}:{{ .Values.lime.image.tag}}
+        imagePullPolicy: {{ .Values.lime.image.pullPolicy }}
+        command:
+        - bash
+        - "-c"
+        - |
+          set -e
+          cp -r /app/html /var/www
+          chown -R daemon:daemon /var/www/html
+          echo "Copied default files into PV mount"
+        volumeMounts:
+        - name: lime-data
+          mountPath: /var/www
+      - name: init-db
+        image: {{ .Values.lime.image.repository}}:{{ .Values.lime.image.tag}}
+        imagePullPolicy: {{ .Values.lime.image.pullPolicy }}
+        command:
+        - bash
+        - "-c"
+        - |
+          set -e
+          cd /var/www/html/application/commands
+          php console.php \
+            install \
+            {{ .Values.lime.creds.adminUser }} \
+            {{ .Values.lime.creds.adminPassword }} \
+            "{{ .Values.lime.creds.adminDisplayName }}" \
+            {{ .Values.lime.creds.adminEmail }} \
+            noisey \
+            | grep -E 'already exists|All done'
+          echo "Configured admin credentials"
+        volumeMounts:
+        - name: init-lime
+          mountPath: /var/www/html/application/config/config.php
+          subPath: config.php
+        - name: lime-data
+          mountPath: /var/www
+      containers:
+      - name: web-server
+        image: {{ .Values.lime.image.repository}}:{{ .Values.lime.image.tag}}
+        imagePullPolicy: {{ .Values.lime.image.pullPolicy }}
+        ports:
+        - containerPort: 80
+          name: httpd
+        volumeMounts:
+        - name: init-lime
+          mountPath: /var/www/html/application/config/config.php
+          subPath: config.php
+        - name: lime-data
+          mountPath: /var/www
+      volumes:
+      - name: init-lime
+        configMap:
+          name: init-lime
+      - name: lime-data
+        persistentVolumeClaim:
+          claimName: lime-pvc

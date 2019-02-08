@@ -64,7 +64,7 @@ set -x
 export KUBECONFIG=${local_file.kubeconfig.filename}
 
 export AWS_DEFAULT_REGION=us-east-2
-helm upgrade --install lime-survey ./lime-survey --namespace=lime-survey \
+helm upgrade --install lime-survey ./chart --namespace=lime-survey \
     --values ${local_file.helm_vars.filename}
 EOF
   }
