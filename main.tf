@@ -36,6 +36,7 @@ resource "local_file" "helm_vars" {
 serviceType: NodePort
 ingress:
   annotations:
+    alb.ingress.kubernetes.io/ssl-policy: "ELBSecurityPolicy-TLS-1-2-2017-01"
     alb.ingress.kubernetes.io/scheme: "${var.is_internal ? "internal" : "internet-facing"}"
     alb.ingress.kubernetes.io/subnets: "${join(",", data.terraform_remote_state.env_remote_state.public_subnets)}"
     alb.ingress.kubernetes.io/security-groups: "${data.terraform_remote_state.env_remote_state.allow_all_security_group}"
