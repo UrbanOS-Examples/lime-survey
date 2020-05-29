@@ -34,14 +34,16 @@ COPY limesurvey.conf /usr/local/apache2/conf/httpd.conf
 
 COPY /session.sh /usr/bin/
 
-COPY /php/sessions /var/lib/php/sessions
+COPY /cron/session-cron /etc/cron.hourly/session-cron
 
-COPY /cron/session-cron /etc/cron.d/session-cron
+COPY start.sh start.sh
 
-RUN chmod 0644 /etc/cron.d/session-cron
+RUN chmod +x start.sh
+
+RUN chmod 0644 /etc/cron.hourly/session-cron
 
 RUN chmod 0744 /usr/bin/session.sh
 
-RUN crontab /etc/cron.d/session-cron
+RUN crontab /etc/cron.hourly/session-cron
 
-CMD ["cron", "-f"]
+CMD ./start.sh
