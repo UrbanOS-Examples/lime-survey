@@ -17,6 +17,7 @@ RUN apt-get update \
     php7.0-zip \
     php7.0-pgsql \
     php7.0-imap \
+    cron \
  && apt-get -yqq clean \
  && rm -rf \
     /var/lib/apt/lists/* \
@@ -30,3 +31,19 @@ RUN mkdir -p /app/html \
   | tar xzf - --strip-components=1 -C '/app/html'
 
 COPY limesurvey.conf /usr/local/apache2/conf/httpd.conf
+
+COPY /session.sh /usr/bin/
+
+COPY /cron/session-cron /etc/cron.hourly/session-cron
+
+COPY start.sh start.sh
+
+RUN chmod +x start.sh
+
+RUN chmod 0644 /etc/cron.hourly/session-cron
+
+RUN chmod 0744 /usr/bin/session.sh
+
+RUN crontab /etc/cron.hourly/session-cron
+
+CMD ./start.sh
