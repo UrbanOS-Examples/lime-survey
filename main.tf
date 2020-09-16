@@ -44,6 +44,7 @@ ingress:
     alb.ingress.kubernetes.io/tags: scos.delete.on.teardown=true
     alb.ingress.kubernetes.io/actions.redirect: '{"Type": "redirect", "RedirectConfig":{"Protocol": "HTTPS", "Port": "443", "StatusCode": "HTTP_301"}}'
     alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+    alb.ingress.kubernetes.io/wafv2-acl-arn: "${data.terraform_remote_state.env_remote_state.eks_cluster_waf_acl_arn}"
   dnsZone: "${data.terraform_remote_state.env_remote_state.internal_dns_zone_name}"
   rootDnsZone: "${data.terraform_remote_state.env_remote_state.root_dns_zone_name}"
   port: 80
