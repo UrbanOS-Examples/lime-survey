@@ -1,5 +1,5 @@
 library(
-    identifier: 'pipeline-lib@4.3.6',
+    identifier: 'pipeline-lib@4.8.0',
     retriever: modernSCM([$class: 'GitSCMSource',
                           remote: 'https://github.com/SmartColumbusOS/pipeline-lib',
                           credentialsId: 'jenkins-github-user'])
@@ -28,13 +28,13 @@ node ('infrastructure') {
                 image.push()
                 image.push('latest')
             }
-            deployLimeTo(environment: 'dev')
+            deployTo(environment: 'dev')
         }
 
         doStageIfPromoted('Deploy to Staging')  {
             def environment = 'staging'
 
-            deployLimeTo(environment: environment)
+            deployTo(environment: environment)
 
             scos.applyAndPushGitHubTag(environment)
 
@@ -47,7 +47,7 @@ node ('infrastructure') {
             def releaseTag = env.BRANCH_NAME
             def promotionTag = 'prod'
 
-            deployLimeTo(environment: 'prod', internal: false)
+            deployTo(environment: 'prod', internal: false)
 
             scos.applyAndPushGitHubTag(promotionTag)
 
@@ -60,12 +60,11 @@ node ('infrastructure') {
     }
 }
 
-def deployLimeTo(params = [:]) {
+def deployTo(params = [:]) {
     def environment = params.get('environment')
-    if (environment == null) throw new IllegalArgumentException("environment must be specified")
 
     def terraform = scos.terraform(environment)
-    sh "terraform init && terraform workspace new ${environment}"
+    terraform.init()
     terraform.plan(terraform.defaultVarFile)
     terraform.apply()
 }
