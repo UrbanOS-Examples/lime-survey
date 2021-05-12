@@ -6,15 +6,11 @@ metadata:
   labels:
     app: {{ .Chart.Name }}
 spec:
+  serviceName: {{ .Chart.Name }}
   selector:
     matchLabels:
       app: {{ .Chart.Name }}
   replicas: 1
-  strategy:
-    rollingUpdate:
-      maxSurge: 1
-      maxUnavailable: 1
-    type: RollingUpdate
   template:
     metadata:
       labels:
